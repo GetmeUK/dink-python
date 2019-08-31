@@ -30,7 +30,8 @@ assets.write('css/document.css')
 assets.write('images/logo.png')
 assets.write('fonts/company-font.otf')
 
-pdfs = dink.resource.PDF.create(
+pdfs = dink.resources.PDF.create(
+    client,
     template_html='''
 <html>
     <head>
@@ -47,7 +48,7 @@ pdfs = dink.resource.PDF.create(
         <h1>{{ title }}</h1>
         <main>
             {{ name }} you worked {{ hours_worked }} hours this week you
-            {% if hours > 40 %}
+            {% if hours_worked > 40 %}
                 star!
             {% else %}
                 lazy bum!
@@ -62,34 +63,32 @@ pdfs = dink.resource.PDF.create(
     </body>
 </html>
     ''',
-    global_vars={
-        'title': 'Weekly sales report'
-    },
     document_args={
         'burt': {
             'hours_worked': 10,
-            'hours_chart': {
-                'chart_type': 'bar',
-                'data': [{'data':  [1, 1, 2, 4, 2]}],
-                'labels': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                'spacing': 0.2
-            }
+            'hours_chart': dink.charts.BarChart(
+                data=[{'data':  [1, 1, 2, 4, 2]}],
+                labels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                spacing=0.2
+            ).to_json_type()
         },
         'harry': {
             'hours_worked': 44,
-            'hours_chart': {
-                'chart_type': 'bar',
-                'data': [{'data':  [8, 8, 10, 8, 10]}],
-                'labels': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                'spacing': 0.2
-            }
+            'hours_chart': dink.charts.BarChart(
+                data=[{'data':  [8, 8, 10, 8, 10]}],
+                labels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                spacing=0.2
+            ).to_json_type()
         }
+    },
+    global_vars={
+        'title': 'Weekly sales report'
     },
     assets=assets
 )
 
-print(pds['burt'])
+print(pdfs['burt'].store_key)
 
->> {'store_key': 'burt.ue32uw.pdf', 'uid': 'ue32uw'}
+>> 'burt.ue32uw.pdf'
 
 ```
