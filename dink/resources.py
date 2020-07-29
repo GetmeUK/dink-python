@@ -53,7 +53,7 @@ class PDF(_BaseResource):
         client,
         template_html,
         document_args,
-        global_vars=None,
+        global_args=None,
         assets=None
     ):
         """
@@ -64,14 +64,6 @@ class PDF(_BaseResource):
         feature `store_key` and `uid` attributes but an `error` attribute.
         """
 
-        if isinstance(assets, zipfile.ZipFile):
-
-            # Convert the assets archive to a file we can send to the server
-            f = io.BytesIO()
-            assets.write(f)
-            f.seek(0)
-            asset = f
-
         results = client(
             'put',
             f'pdfs',
@@ -79,8 +71,8 @@ class PDF(_BaseResource):
             data={
                 'template_html': template_html,
                 'document_args': json.dumps(document_args),
-                'global_vars': json.dumps(global_vars) \
-                        if global_vars else None
+                'global_args': json.dumps(global_args) \
+                        if global_args else None
             }
         )
 

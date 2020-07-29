@@ -24,11 +24,15 @@ import zipfile
 
 client = dink.Client('your_api_key...')
 
-assets = zipfile.ZipFile()
-assets.write('includes/footer.html')
-assets.write('css/document.css')
-assets.write('images/logo.png')
-assets.write('fonts/company-font.otf')
+assets = io.BytesIO()
+with zipfile.ZipFile(assets, mode='w', compression=zipfile.ZIP_DEFLATED) as z:
+
+    z.write('includes/footer.html')
+    z.write('css/document.css')
+    z.write('images/logo.png')
+    z.write('fonts/company-font.otf')
+
+assets.seek(0)
 
 pdfs = dink.resources.PDF.create(
     client,
@@ -81,7 +85,7 @@ pdfs = dink.resources.PDF.create(
             ).to_json_type()
         }
     },
-    global_vars={
+    global_args={
         'title': 'Weekly sales report'
     },
     assets=assets
