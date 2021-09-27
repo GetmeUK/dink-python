@@ -49,12 +49,14 @@ class PDF(_BaseResource):
         return f'PDF: {self.store_key}'
 
     @classmethod
-    def create(cls,
+    def create(
+        cls,
         client,
         template_html,
         document_args,
         global_args=None,
-        assets=None
+        assets=None,
+        notification_url=None
     ):
         """
         Create one or more PDFs. Returns a map of created PDFs with each key
@@ -72,8 +74,10 @@ class PDF(_BaseResource):
                 'template_html': template_html,
                 'document_args': json.dumps(document_args),
                 'global_args': json.dumps(global_args) \
-                        if global_args else None
+                        if global_args else None,
+                'notification_url': notification_url
             }
         )
 
-        return {k: cls(client, v) for k, v in results.items()}
+        if notification_url is None:
+            return {k: cls(client, v) for k, v in results.items()}
